@@ -34,7 +34,7 @@ public class CompanyController {
     }
 
     @DeleteMapping( value = "/{id}", produces = {"application/json"})
-    public List<Company> deleteCompanyInfo(@PathVariable Long id) {
+    public List<Company> deleteCompany(@PathVariable Long id) {
         repository.deleteById(id);
         return repository.findAll();
     }
