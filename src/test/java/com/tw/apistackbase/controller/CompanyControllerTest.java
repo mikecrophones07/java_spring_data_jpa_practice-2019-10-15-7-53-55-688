@@ -15,13 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,7 +65,7 @@ class CompanyControllerTest {
     }
 
     @Test
-    void should_Return_404_when_update_company_is_called() throws Exception {
+    void should_Return_Is_Not_Found_when_update_company_is_called() throws Exception {
         Company company = new Company();
 
         ResultActions result = mvc.perform(patch("/companies/1")
@@ -85,6 +85,17 @@ class CompanyControllerTest {
                 .content(objectMapper.writeValueAsString(company)));
 
         result.andExpect(status().isOk());
-//                .andExpect(jsonPath("$", is(company)));
+    }
+
+    @Test
+    void should_Return_Is_Not_Found_When_Company_Is_Deleted() throws Exception {
+        Company company = new Company();
+        when(service.deleteCompany(anyLong())).thenReturn(Optional.of(company));
+
+        ResultActions result = mvc.perform(delete("/companies/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)));
+
+        result.andExpect(status().isOk());
     }
 }
