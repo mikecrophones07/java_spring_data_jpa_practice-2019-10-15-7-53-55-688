@@ -16,9 +16,14 @@ public class CompanyController {
     @Autowired
     private CompanyRepository repository;
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(path = "/all", produces = {"application/json"})
     public Iterable<Company> list() {
         return repository.findAll();
+    }
+
+    @GetMapping(produces = {"application/json"})
+    public Iterable<Company> list(@RequestParam String name) {
+        return repository.findByNameContaining(name);
     }
 
     @GetMapping(value = "/{name}", produces = {"application/json"})
