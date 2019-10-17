@@ -43,4 +43,16 @@ class CompanyControllerTest {
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(companyList)));
     }
+
+    @Test
+    void should_Return_Company_List_By_KeyWord_Name() throws Exception {
+        Iterable<Company> companyList = new ArrayList<>();
+        when(service.getAllCompanyContainingName("Mike")).thenReturn(companyList);
+
+        ResultActions result = mvc.perform(get("/companies")
+                .contentType("application/json;charset=UTF-8")
+                .param("name", "Mike"));
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(companyList)));
+    }
 }
