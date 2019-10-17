@@ -3,10 +3,13 @@ package com.tw.apistackbase.controller;
 import com.tw.apistackbase.core.Company;
 import com.tw.apistackbase.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Optional;
 
 @RestController
@@ -17,12 +20,13 @@ public class CompanyController {
     private CompanyRepository repository;
 
     @GetMapping(path = "/all", produces = {"application/json"})
-    public Iterable<Company> list() {
-        return repository.findAll();
+    public Iterable<Company> list(@RequestParam (required = false, defaultValue = "1") Integer page,
+                                  @RequestParam (required = false, defaultValue = "5") Integer pageSize) {
+        return repository.findAll(PageRequest.of(page, pageSize));
     }
 
     @GetMapping(produces = {"application/json"})
-    public Iterable<Company> list(@RequestParam String name) {
+    public Iterable<Company> list(@RequestParam(required = false, defaultValue = "") String name) {
         return repository.findByNameContaining(name);
     }
 
