@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -71,5 +73,18 @@ class CompanyControllerTest {
                 .content(objectMapper.writeValueAsString(company)));
 
         result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_Return_Updated_Company() throws Exception {
+        Company company = new Company();
+        when(service.updateCompanyInfo(anyLong(), any())).thenReturn(company);
+
+        ResultActions result = mvc.perform(patch("/companies/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)));
+
+        result.andExpect(status().isOk());
+//                .andExpect(jsonPath("$", is(company)));
     }
 }
