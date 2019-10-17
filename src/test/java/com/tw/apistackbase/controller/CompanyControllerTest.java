@@ -44,7 +44,7 @@ class CompanyControllerTest {
         Iterable<Company> companyList = new ArrayList<>();
         when(service.getAllCompany(1, 5)).thenReturn(companyList);
 
-        ResultActions result = mvc.perform(get("/companies")
+        ResultActions result = mvc.perform(get("/companies/all")
                 .contentType("application/json;charset=UTF-8")
                 .param("page", "1")
                 .param("pageSize", "5"));
@@ -62,6 +62,16 @@ class CompanyControllerTest {
                 .param("name", "Mike"));
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(companyList)));
+    }
+
+    @Test
+    void should_Return_Company_By_Name() throws Exception {
+        Company company = new Company();
+        when(service.getCompanyByName("Mike")).thenReturn(company);
+
+        ResultActions result = mvc.perform(get("/companies/{id}", "Mike")
+                .contentType(MediaType.APPLICATION_JSON));
+        result.andExpect(status().isOk());
     }
 
     @Test
@@ -93,6 +103,18 @@ class CompanyControllerTest {
         when(service.deleteCompany(anyLong())).thenReturn(Optional.of(company));
 
         ResultActions result = mvc.perform(delete("/companies/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)));
+
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void should_Add_Company() throws Exception {
+        Company company = new Company();
+        when(service.saveCompany(company)).thenReturn(company);
+
+        ResultActions result = mvc.perform(post("/companies")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(company)));
 
