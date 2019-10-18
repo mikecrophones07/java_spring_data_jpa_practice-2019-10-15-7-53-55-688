@@ -2,6 +2,7 @@ package com.tw.apistackbase.controller;
 
 import com.tw.apistackbase.Service.CompanyService;
 import com.tw.apistackbase.core.Company;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RequestMapping("/companies")
 public class CompanyController {
 
+    public static final String COMPANY_NOT_FOUND = "Company Not found!";
     @Autowired
     CompanyService service;
 
@@ -34,18 +36,21 @@ public class CompanyController {
     }
 
     @PatchMapping(value = "/{id}", produces = {"application/json"})
-    public ResponseEntity<Company> updateCompanyInfo(@PathVariable Long id, @RequestBody Company company) {
+    public ResponseEntity<Company> updateCompanyInfo(@PathVariable Long id, @RequestBody Company company) throws NotFoundException {
         Company updatedCompany = service.updateCompanyInfo(id, company);
         if(Objects.nonNull(updatedCompany)){
             return new ResponseEntity<>(updatedCompany, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        throw new NotFoundException(COMPANY_NOT_FOUND);
     }
 
     @DeleteMapping( value = "/{id}", produces = {"application/json"})
-    public ResponseEntity<Company> deleteCompany(@PathVariable Long id) {
+    public ResponseEntity<Company> deleteCompany(@PathVariable Long id) throws NotFoundException {
         Optional<Company> fetchedCompany = service.deleteCompany(id);
-        return fetchedCompany.map(company -> new ResponseEntity<>(company, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if(Objects.nonNull(fetchedCompany)){
+            return new ResponseEntity<>(fetchedCompany.get(), HttpStatus.OK);
+        }
+        throw new NotFoundException(COMPANY_NOT_FOUND);
     }
 
 
